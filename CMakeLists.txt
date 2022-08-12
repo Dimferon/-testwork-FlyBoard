@@ -14,11 +14,32 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+set(SRC_DIR "src")
+set(SOURCE_DIRS fly)
+
+file(GLOB ALL_HEADERS "${SRC_DIR}/*.h" "${SRC_DIR}/*.hpp")
+file(GLOB ALL_SOURCES "${SRC_DIR}/*.cpp" "${SRC_DIR}/*.c")
+file(GLOB ALL_UI "${SRC_DIR}/*.ui")
+
+foreach(DIR ${SOURCE_DIRS})
+	file(GLOB HEADERS "${SRC_DIR}/${DIR}/*.h" "${SRC_DIR}/${DIR}/*.hpp")
+	file(GLOB SOURCES "${SRC_DIR}/${DIR}/*.cpp" "${SRC_DIR}/${DIR}/*.c")
+	file(GLOB UIS "${SRC_DIR}/${DIR}/*.ui")
+
+	list(APPEND ALL_HEADERS ${HEADERS})
+	list(APPEND ALL_SOURCES ${SOURCES})
+	list(APPEND ALL_UI ${UIS})
+endforeach(DIR)
+
+source_group("Header Files" FILES ${ALL_HEADERS})
+source_group("Source Files" FILES ${ALL_SOURCES})
+source_group("UI Files" FILES ${ALL_UI})
+
 set(PROJECT_SOURCES
-        main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
+		${ALL_HEADERS}
+		${ALL_SOURCES}
+		${ALL_UI}
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -45,12 +66,6 @@ else()
 endif()
 
 target_link_libraries(FlyBoard PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
-
-set_target_properties(FlyBoard PROPERTIES
-    MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-)
 
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(FlyBoard)
