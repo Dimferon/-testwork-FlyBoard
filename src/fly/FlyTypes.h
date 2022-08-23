@@ -1,23 +1,38 @@
 #pragma once
 
+#include <QPoint>
 #include <QTime>
-#include <QPair>
+#include <QVector>
 
 namespace flyses {
 
-	typedef QPair<int, int> Point2i;
+class FlyMoveTo
+{
+public:
+	static const QPoint NOT_MOVE;
+	static const QPoint UP;
+	static const QPoint UP_RIGHT;
+	static const QPoint RIGHT;
+	static const QPoint DOWN_RIGHT;
+	static const QPoint DOWN;
+	static const QPoint DOWN_LEFT;
+	static const QPoint LEFT;
+	static const QPoint UP_LEFT;
 
-	enum class StateFly
-	{
-		DEAD_FLY,
-		LIVE_FLY
-	};
+	static const QVector<QPoint> MOVE_TO;
+};
 
-	struct FlyStatistic
-	{
-		int speed; // скорость
-		int mileage; // пробег
-		long lifetime; // возраст
-		StateFly state; // состояние мухи
-	};
-}
+enum class FlyStatus {
+	DEAD_FLY,
+	LIVE_FLY
+	/*, MOVE_FLY*/
+};
+
+struct FlyInfo
+{
+	int speed;		// СЃРєРѕСЂРѕСЃС‚СЊ
+	int mileage;	// РїСЂРѕР±РµРі
+	long lifetime;	// РІРѕР·СЂР°СЃС‚
+	FlyStatus state; // СЃРѕСЃС‚РѕСЏРЅРёРµ РјСѓС…Рё
+};
+} // namespace flyses

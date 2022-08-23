@@ -2,55 +2,85 @@
 
 #include "FlyTypes.h"
 
+#include <functional>
+#include <memory>
+
 #include <QList>
-#include <QTime>
 #include <QObject>
 #include <QThread>
+#include <QTime>
 
 namespace flyses {
 
-	class Fly: public QObject
-	{
+class Fly
+{
+public:
+	///
+	/// \brief Fly
+	/// \param torpor РІСЂРѕР¶РґРµРЅРЅР°СЏ С‚СѓРїРѕСЃС‚СЊ РјСѓС…
+	/// \param sizeBoard СЂР°Р·РјРµСЂ РґРѕСЃРєРё РґР»СЏ СЂР°Р·СЃС‡РµС‚Р° РІСЂРµРјРµРЅРё СЃРјРµСЂС‚Рё
+	/// \param startPoint СЃС‚Р°СЂС‚РѕРІР°СЏ РїРѕР·РёС†РёСЏ РјСѓС…Рё
+	///
+	Fly(const size_t torpor, const size_t sizeBoard, const QPoint &startPoint);
 
-	public:
-		/// <summary>
-		/// Проверяем состояние мухи (create + lifeSpan > currentTime)
-		/// </summary>
-		/// <returns>Жива/мертва</returns>
-		StateFly checkState();
+public:
+	///
+	/// \brief РџСЂРѕРІРµСЂСЏРµРј СЃРѕСЃС‚РѕСЏРЅРёРµ РјСѓС…Рё (create + lifeSpan > currentTime)
+	/// \return Р–РёРІР°/РјРµСЂС‚РІР°
+	///
+	FlyStatus getStatus();
+	FlyStatus setStatus(FlyStatus status);
 
-	public:
-		Point2i getCurrentPoint() const;
-		Point2i moveTo();
+public:
+	QPoint getCurrentPoint() const;
+	///
+	/// \brief updatePoint РѕР±РЅРѕРІР»СЏРµРј С‚РµРєСѓС‰РµРµ РїРѕР»РѕР¶РµРЅРёРµ
+	/// \param point РЅРѕРІРѕРµ РїРѕР»РѕР¶РµРЅРёРµ РјСѓС…Рё
+	///
+	void updatePoint(const QPoint &point);
 
-		FlyStatistic getStatisticFly();
+	///
+	/// \brief Р’РѕР·РІСЂР°С‰Р°РµС‚ РІРµРєС‚РѕСЂ РїРµСЂРµРјРµС‰РµРЅРёСЏ РёР· flyses::FlyMoves
+	///
+	QPoint choosingPath();
 
-	protected:
-		/// <summary>
-		/// Векторы перемещения, определяет вектор пути мухи.
-		/// Первый элемент списка - начальное положение мухи
-		/// </summary>
-		QList<Point2i> _listMoves;
+	FlyInfo getFlyInfo();
 
-		/// <summary>
-		/// Текущее положение мухи
-		/// </summary>
-		Point2i _currentPoint;
+	static size_t getBOARD_SIZE();
 
-		/// <summary>
-		/// Врожденная тупость мух, определяется время жизни и скорость выбора перемещения
-		/// </summary>
-		const size_t _torpor;
+	size_t torpor() const;
 
-		/// <summary>
-		/// Время создания
-		/// </summary>
-		QTime _createTime;
+public slots:
+	void lifeFly();
 
-		/// <summary>
-		/// Промежуток жизни = _torpor x size
-		/// </summary>
-		QTime _lifeTimeSpan;
-	};
+protected:
+	FlyStatus _status{FlyStatus::LIVE_FLY};
 
-}
+	///
+	/// \brief Р’РµРєС‚РѕСЂС‹ РїРµСЂРµРјРµС‰РµРЅРёСЏ, РѕРїСЂРµРґРµР»СЏРµС‚ РІРµРєС‚РѕСЂ РїСѓС‚Рё РјСѓС…Рё.
+	/// РџРµСЂРІС‹Р№ СЌР»РµРјРµРЅС‚ СЃРїРёСЃРєР° - РЅР°С‡Р°Р»СЊРЅРѕРµ РїРѕР»РѕР¶РµРЅРёРµ РјСѓС…Рё
+	///
+	QList<QPoint> _listMoves;
+
+	///
+	/// \brief РўРµРєСѓС‰РµРµ РїРѕР»РѕР¶РµРЅРёРµ РјСѓС…Рё
+	///
+	QPoint _currentPoint;
+
+	///
+	/// \brief Р’СЂРѕР¶РґРµРЅРЅР°СЏ С‚СѓРїРѕСЃС‚СЊ РјСѓС…, РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ РІСЂРµРјСЏ Р¶РёР·РЅРё Рё СЃРєРѕСЂРѕСЃС‚СЊ РІС‹Р±РѕСЂР° РїРµСЂРµРјРµС‰РµРЅРёСЏ
+	///
+	const size_t _torpor;
+
+	const QTime _createTime;
+
+	///
+	/// \brief РґР°С‚Р° Рё РІСЂРµРјСЏ СЃРјРµСЂС‚Рё
+	///
+	QTime _deadTime;
+};
+
+typedef QSharedPointer<Fly> FlyPtr;
+typedef std::unique_ptr<Fly> FlyUnicPtr;
+
+} // namespace flyses
